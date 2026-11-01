@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Briefcase, Plus, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Briefcase, Plus, Trash2, Crown, Lock, Zap } from 'lucide-react';
 import AddHoldingModal from '@/components/portfolio/AddHoldingModal';
 import LivePrice from '@/components/markets/LivePrice';
 import { usePortfolio } from '@/hooks/usePortfolio';
@@ -11,10 +11,14 @@ interface PortfolioTabProps {
   instruments: Instrument[];
 }
 
+const FREE_LIMIT = 2;
+const QUICK_ADD = ['EUR/USD', 'BTC/USD', 'AAPL'];
+
 export default function PortfolioTab({ instruments }: PortfolioTabProps) {
   const { holdings, addHolding, removeHolding } = usePortfolio();
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const instrumentBySymbol = useMemo(
     () => new Map(instruments.map((item) => [item.symbol, item])),
@@ -44,6 +48,7 @@ export default function PortfolioTab({ instruments }: PortfolioTabProps) {
   }, [rows]);
 
   const profitTone = totals.profitLoss >= 0 ? 'text-up' : 'text-down';
+  const isFreeLimitReached = holdings.length >= FREE_LIMIT;
 
   const handleRemove = (holding: Holding) => {
     if (confirmId !== holding.id) {
@@ -54,22 +59,65 @@ export default function PortfolioTab({ instruments }: PortfolioTabProps) {
     removeHolding(holding.id);
   };
 
+  const handleAddClick = () => {
+    if (isFreeLimitReached) {
+      setShowUpgrade(true);
+      return;
+    }
+    setModalOpen(true);
+  };
+
+  const handleQuickAdd = (symbol: string) => {
+    if (isFreeLimitReached) {
+      setShowUpgrade(true);
+      return;
+    }
+    const instrument = instrumentBySymbol.get(symbol);
+    if (!instrument) return;
+    addHolding({
+      symbol: instrument.symbol,
+      name: instrument.name,
+      assetClass: instrument.assetClass,
+      quantity: 1,
+      avgCost: instrument.price,
+    });
+  };
+
   return (
     <section className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-ink-100 sm:text-3xl">Portfolio</h1>
-          <p className="mt-1 text-sm text-ink-400">Your holdings valued at live prices.</p>
+          <p className="mt-1 text-sm text-ink-400">Your holdings valued at live prices. FREE: {holdings.length}/{FREE_LIMIT}</p>
         </div>
         <button
           type="button"
-          onClick={() => setModalOpen(true)}
+          onClick={handleAddClick}
           disabled={instruments.length === 0}
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand px-5 font-semibold text-black transition hover:brightness-110 disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
           Add holding
         </button>
+      </div>
+
+      {/* QUICK ADD BUTTONS */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="flex items-center gap-1 text-xs text-ink-400"><Zap className="h-3 w-3" /> Quick add:</span>
+        {QUICK_ADD.map(sym => {
+          const inst = instrumentBySymbol.get(sym);
+          const added = holdings.some(h => h.symbol === sym);
+          return (
+            <button
+              key={sym}
+              onClick={() => handleQuickAdd(sym)}
+              disabled={added}
+              className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${added ? 'border-ink-800 bg-ink-900 text-ink-500' : 'border-brand/30 bg-brand/10 text-brand hover:bg-brand hover:text-black'}`}
+            >
+              {added ? `${sym} ✓` : `+ ${sym} @ ${inst ? formatPrice(inst.price, inst.decimals) : ''}`}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -82,6 +130,15 @@ export default function PortfolioTab({ instruments }: PortfolioTabProps) {
         />
         <SummaryCard label="Return" value={formatPercent(totals.profitLossPercent)} tone={profitTone} />
       </div>
+
+      {isFreeLimitReached && (
+        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+          <p className="flex items-center gap-2 text-sm text-amber-200">
+            <Lock className="h-4 w-4" /> FREE limit reached ({FREE_LIMIT}/{FREE_LIMIT}). Upgrade for unlimited holdings.
+          </p>
+          <button onClick={() => setShowUpgrade(true)} className="rounded-lg bg-amber-500 px-3 py-1 text-xs font-bold text-black">UPGRADE</button>
+        </div>
+      )}
 
       {rows.length === 0 ? (
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-ink-700 bg-ink-900/40 px-6 py-16 text-center">
@@ -184,6 +241,22 @@ export default function PortfolioTab({ instruments }: PortfolioTabProps) {
           onSave={addHolding}
         />
       )}
+
+      <AnimatePresence>
+        {showUpgrade && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6 backdrop-blur-sm" onMouseDown={() => setShowUpgrade(false)}>
+            <motion.div initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: 20 }} onMouseDown={e => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-brand/30 bg-ink-900 p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand/20"><Crown className="h-6 w-6 text-brand" /></div>
+              <h3 className="mt-3 text-lg font-bold text-ink-100">FREE Limit Reached</h3>
+              <p className="mt-2 text-sm text-ink-400">You have {FREE_LIMIT} holdings on FREE plan. Upgrade to Weekly (UGX 25k), Monthly (75k) or Yearly (650k) for UNLIMITED portfolio + AI analytics.</p>
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <button onClick={() => setShowUpgrade(false)} className="h-11 rounded-xl border border-ink-700 text-sm text-ink-300">Maybe later</button>
+                <button onClick={() => setShowUpgrade(false)} className="h-11 rounded-xl bg-brand text-sm font-bold text-black">View Plans</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -201,4 +274,4 @@ function SummaryCard({ label, value, tone = 'text-ink-100' }: SummaryCardProps) 
       <p className={`tabular mt-1.5 text-lg font-bold sm:text-xl ${tone}`}>{value}</p>
     </div>
   );
-}
+    }
