@@ -171,4 +171,4 @@ function LockedCard({ title, description, badge, preview, onUpgrade }: { title: 
       </div>
     </button>
   );
-}
+        }
