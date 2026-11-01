@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply bg-black text-ink-100 antialiased;
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: #FFD60A;
+    color: #000;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
