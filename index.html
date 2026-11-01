@@ -1,16 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rhino Capital Markets Terminal</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RHINO CAPITAL MARKETS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Inter',sans-serif;background:#F5F7FF}
+.blink{animation:b 1s infinite} @keyframes b{0%,100%{opacity:1}50%{opacity:.2}}
+@media print{.no-print{display:none!important} body{background:white!important}}
+</style>
+</head>
+<body class="bg-[#F5F7FF] text-slate-900">
+
+<!-- LOGIN - BLUE BIG FONTS -->
+<div id="auth" class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-600 to-blue-800">
+<div class="bg-white w-full max-w-[380px] rounded-[28px] p-8 shadow-2xl">
+<h1 class="text-[22px] font-black text-blue-700 leading-tight">RHINO CAPITAL MARKETS</h1>
+<p class="text-blue-500 text-[11px] tracking-[0.3em] font-bold mt-1">FOREX • STOCKS • LIVE TERMINAL</p>
+
+<div class="mt-8 space-y-3">
+<div class="relative">
+<div onclick="toggleF()" class="bg-slate-100 border border-slate-200 p-4 rounded-xl flex items-center cursor-pointer">
+<span id="f" class="text-2xl">🇺🇬</span><span id="c" class="ml-2 font-bold text-[18px]">+256</span><span class="ml-auto">▼</span>
+</div>
+<div id="fl" class="hidden absolute w-full mt-2 bg-white border rounded-xl shadow-xl z-10 max-h-64 overflow-auto">
+<input id="fs" oninput="fil()" placeholder="Search country like Binance..." class="w-full p-3 border-b outline-none text-[15px] sticky top-0 bg-white">
+<div id="fi"></div>
+</div>
+</div>
+
+<div class="flex gap-2">
+<div class="bg-slate-100 border p-4 rounded-xl font-bold text-[16px]"><span id="cd">🇺🇬 +256</span></div>
+<input class="flex-1 bg-slate-100 border p-4 rounded-xl outline-none text-[18px]" placeholder="771 234 567">
+</div>
+
+<button onclick="enter()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-bold text-[17px]">Enter LIVE MARKETS →</button>
+<button onclick="enter()" class="w-full bg-white border-2 p-4 rounded-xl font-bold">G Continue with Google</button>
+<p class="text-[11px] text-slate-500 text-center font-semibold">Demo mode • Instant • No SMS</p>
+</div>
+</div>
+</div>
+
+<!-- TERMINAL -->
+<div id="app" class="hidden min-h-screen">
+<div class="bg-white border-b sticky top-0 z-20">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-2">
+<span class="bg-red-500 text-white text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1"><span class="w-2 h-2 bg-white rounded-full blink"></span> LIVE</span>
+<span class="font-black text-blue-700 tracking-wide">RHINO TERMINAL</span>
+</div>
+<button onclick="window.print()" class="no-print bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm font-bold">🖨️ Print PDF</button>
+</div>
+<div class="flex gap-2 p-3 overflow-auto no-print">
+<button onclick="t('m')" id="tm" class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold text-sm">LIVE MARKETS</button>
+<button onclick="t('fx')" id="tfx" class="bg-slate-100 px-4 py-2 rounded-full text-sm font-bold">FOREX • CURRENCIES</button>
+<button onclick="t('in')" id="tin" class="bg-slate-100 px-4 py-2 rounded-full text-sm">INTELLIGENCE</button>
+<button onclick="t('s')" id="ts" class="bg-slate-100 px-4 py-2 rounded-full text-sm">SIMULATOR</button>
+<button onclick="t('p')" id="tp" class="bg-slate-100 px-4 py-2 rounded-full text-sm">PORTFOLIO</button>
+</div>
+</div>
+
+<div id="m" class="p-4">
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<h2 class="font-bold text-[17px] flex items-center gap-2"><span class="w-3 h-3 bg-red-500 rounded-full blink"></span> LIVE GRAPH • UGX/USD <span class="ml-auto text-green-600">3,720.50 ▲0.42%</span></h2>
+<canvas id="ch1" height="130" class="mt-4"></canvas>
+</div>
+<div class="grid grid-cols-2 gap-3 mt-3">
+<div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-xs text-slate-500">UGX/USD</p><p class="font-bold text-lg">3,720 <span class="text-green-600 text-xs">● LIVE</span></p></div>
+<div class="bg-white p-4 rounded-xl shadow-sm"><p class="text-xs text-slate-500">BTC/USD</p><p class="font-bold text-lg">$68,432 <span class="text-green-600 text-xs">+2.1%</span></p></div>
+</div>
+<div class="mt-3 text-right no-print"><button onclick="window.print()" class="bg-white border px-4 py-2 rounded-full text-sm font-bold">🖨️ Print Markets Report PDF</button></div>
+</div>
+
+<div id="fx" class="hidden p-4">
+<div class="bg-white rounded-2xl p-5 shadow-sm">
+<h2 class="font-bold text-lg">🌍 Global Currencies • Forex</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px] text-slate-500">EUR/USD <span class="text-red-500 blink">● LIVE</span></p><p class="font-bold text-[15px]">1.0845 ▲0.12%</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px] text-slate-500">GBP/USD <span class="text-red-500 blink">● LIVE</span></p><p class="font-bold">1.2730 ▼0.08%</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px] text-slate-500">USD/JPY <span class="text-red-500 blink">● LIVE</span></p><p class="font-bold">149.20 ▲0.25%</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">UGX/USD</p><p class="font-bold">3,720.50 ▲</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">KES/USD</p><p class="font-bold">129.50 ▼</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">TZS/USD</p><p class="font-bold">2,580 ▲</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">ZAR/USD</p><p class="font-bold">18.90 ▼</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">NGN/USD</p><p class="font-bold">1,580 ▲</p></div>
+<div class="bg-slate-50 p-3 rounded-xl"><p class="text-[11px]">GOLD</p><p class="font-bold">$2,340 ▲</p></div>
+</div>
+<canvas id="ch2" height="120" class="mt-4"></canvas>
+</div>
+<div class="mt-3 text-right no-print"><button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">🖨️ Print Forex PDF</button></div>
+</div>
+
+<div id="in" class="hidden p-4"><div class="bg-white rounded-2xl p-5"><h2 class="font-bold">Intelligence Report</h2><p class="text-slate-600 mt-2 text-[15px] leading-relaxed">Bank of Uganda holds rate at 10.25%. IMF outlook positive. NSE up 0.3%.<br><br>This report is printable.</p><div class="mt-4 no-print"><button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold">🖨️ Print Intelligence PDF</button></div></div></div>
+<div id="s" class="hidden p-4"><div class="bg-white rounded-2xl p-5"><h2 class="font-bold">Simulator • $10,000 virtual</h2><div class="mt-4 no-print"><button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold">🖨️ Print Simulator PDF</button></div></div></div>
+<div id="p" class="hidden p-4"><div class="bg-white rounded-2xl p-5"><h2 class="font-bold">Portfolio • UGX 12,400,000</h2><p class="mt-2">P&L +2.4% today</p><div class="mt-4 no-print"><button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold">🖨️ Print Portfolio PDF</button></div></div></div>
+</div>
+
+<script>
+const countries=[{f:"🇺🇬",c:"+256",n:"Uganda",s:"uganda"},{f:"🇰🇪",c:"+254",n:"Kenya",s:"kenya"},{f:"🇹🇿",c:"+255",n:"Tanzania",s:"tanzania"},{f:"🇷🇼",c:"+250",n:"Rwanda",s:"rwanda"},{f:"🇺🇸",c:"+1",n:"USA",s:"usa america"},{f:"🇬🇧",c:"+44",n:"UK",s:"uk britain"},{f:"🇳🇬",c:"+234",n:"Nigeria",s:"nigeria"},{f:"🇿🇦",c:"+27",n:"South Africa",s:"south africa"},{f:"🇦🇪",c:"+971",n:"UAE",s:"uae dubai"},{f:"🇮🇳",c:"+91",n:"India",s:"india"}]
+function render(l){document.getElementById('fi').innerHTML=l.map(x=>`<div onclick="pick('${x.c}')" class="p-3 hover:bg-slate-100 flex gap-3 cursor-pointer text-[15px]"><span class="text-xl">${x.f}</span><span>${x.n}</span><span class="ml-auto text-slate-500">${x.c}</span></div>`).join('')}
+render(countries)
+function toggleF(){document.getElementById('fl').classList.toggle('hidden'); document.getElementById('fs').focus()}
+function fil(){let q=document.getElementById('fs').value.toLowerCase(); render(countries.filter(x=>x.n.toLowerCase().includes(q)||x.c.includes(q)||x.s.includes(q)))}
+function pick(c){let s=countries.find(x=>x.c==c); document.getElementById('f').innerText=s.f; document.getElementById('c').innerText=s.c; document.getElementById('cd').innerText=s.f+' '+s.c; document.getElementById('fl').classList.add('hidden')}
+function enter(){document.getElementById('auth').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); initC(); localStorage.setItem('rhino','1')}
+function t(id){['m','fx','in','s','p'].forEach(x=>document.getElementById(x).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); ['tm','tfx','tin','ts','tp'].forEach(x=>document.getElementById(x).className='bg-slate-100 px-4 py-2 rounded-full text-sm'); document.getElementById(id=='m'?'tm':id=='fx'?'tfx':id=='in'?'tin':id=='s'?'ts':'tp').className='bg-blue-600 text-white px-4 py-2 rounded-full font-bold text-sm'}
+if(localStorage.getItem('rhino')) enter()
+function initC(){
+new Chart(document.getElementById('ch1'),{type:'line',data:{labels:['9am','10am','11am','12pm','1pm','Now'],datasets:[{data:[3690,3705,3710,3715,3718,3720],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.1)',fill:true,tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{y:{display:false},x:{grid:{display:false}}}}})
+new Chart(document.getElementById('ch2'),{type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri','Now'],datasets:[{data:[1.08,1.082,1.081,1.083,1.084,1.0845],borderColor:'#10b981',fill:false,tension:0.4}]},options:{plugins:{legend:{display:false}}}})
+}
+</script>
+</body>
 </html>
