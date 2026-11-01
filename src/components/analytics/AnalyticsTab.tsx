@@ -15,9 +15,10 @@ import { MARKET_NEWS } from '@/lib/news';
 
 interface AnalyticsTabProps {
   instruments: Instrument[];
+  onUpgrade?: () => void;
 }
 
-export default function AnalyticsTab({ instruments }: AnalyticsTabProps) {
+export default function AnalyticsTab({ instruments, onUpgrade }: AnalyticsTabProps) {
   const stats = useMemo(() => {
     const sorted = [...instruments].sort((a, b) => changePercent(b) - changePercent(a));
     const gainers = sorted.slice(0, 5);
@@ -117,12 +118,14 @@ export default function AnalyticsTab({ instruments }: AnalyticsTabProps) {
           description="BTC dominance + sector rotation. Pro traders only."
           badge="PRO"
           preview="BTC.D 58.3% • ETH.D 18.2% • Altseason Risk: HIGH"
+          onUpgrade={onUpgrade}
         />
         <LockedCard
           title="AI Sentiment Analysis"
           description="Real-time news + social sentiment score for every asset."
           badge="PRO"
           preview="Overall Sentiment: Bullish 72% • Fear zone ending • Buy signal"
+          onUpgrade={onUpgrade}
         />
       </div>
     </section>
@@ -144,9 +147,9 @@ function KpiCard({ label, value, tone }: KpiCardProps) {
   );
 }
 
-function LockedCard({ title, description, badge, preview }: { title: string; description: string; badge: string; preview: string }) {
+function LockedCard({ title, description, badge, preview, onUpgrade }: { title: string; description: string; badge: string; preview: string; onUpgrade?: () => void }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-brand/20 bg-ink-900/80 p-5">
+    <button onClick={() => onUpgrade?.()} className="relative overflow-hidden rounded-2xl border border-brand/20 bg-ink-900/80 p-5 text-left w-full hover:border-brand/40 transition">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-ink-100">{title}</h2>
         <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold uppercase text-black">
@@ -166,6 +169,6 @@ function LockedCard({ title, description, badge, preview }: { title: string; des
           <p className="text-[11px] text-ink-400">Weekly / Monthly / Yearly plan</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
