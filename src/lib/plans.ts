@@ -1,5 +1,7 @@
+export type PlanId = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
 export interface Plan {
-  id: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  id: PlanId;
   name: string;
   price: number;
   period: string;
@@ -13,33 +15,62 @@ export const PLANS: Plan[] = [
     name: 'Daily',
     price: 5000,
     period: 'per day',
-    perks: ['Live markets for every nation', 'Charts with all timeframes', 'Portfolio tracking'],
+    perks: [
+      'Full terminal access',
+      'Live markets & charts',
+      'Basic analytics',
+      'Cancel anytime',
+    ],
   },
   {
     id: 'weekly',
     name: 'Weekly',
-    price: 20000,
+    price: 25000,
     period: 'per week',
-    perks: ['Everything in Daily', 'Analytics and market news', 'Live sentiment index'],
+    badge: 'MOST POPULAR',
+    perks: [
+      'Everything in Daily',
+      'Advanced analytics',
+      'Portfolio tracking (5 assets)',
+      'Priority support',
+      'Save 28% vs daily',
+    ],
   },
   {
     id: 'monthly',
     name: 'Monthly',
-    price: 50000,
+    price: 75000,
     period: 'per month',
-    badge: 'Most popular',
-    perks: ['Everything in Weekly', 'Moving-average indicators', 'Full portfolio tracking'],
+    badge: 'BEST VALUE',
+    perks: [
+      'Everything in Weekly',
+      'Unlimited portfolio',
+      'AI sentiment analysis',
+      'Market dominance tracker',
+      'Export data',
+      'Save 50% vs daily',
+    ],
   },
   {
     id: 'yearly',
     name: 'Yearly',
-    price: 400000,
+    price: 650000,
     period: 'per year',
-    badge: 'Save 33% vs monthly',
-    perks: ['Everything in Monthly', 'Pay for 8 months, get 12', 'Best value for active traders'],
+    badge: 'SAVE 64%',
+    perks: [
+      'Everything in Monthly',
+      'VIP trader badge',
+      '1-on-1 onboarding call',
+      'Early feature access',
+      'Save 64% vs daily - best deal',
+    ],
   },
 ];
 
 export function formatUgx(amount: number): string {
-  return `UGX ${amount.toLocaleString('en-US')}`;
-}
+  return new Intl.NumberFormat('en-UG', {
+    style: 'currency',
+    currency: 'UGX',
+    maximumFractionDigits: 0,
+  }).format(amount);
+      }
