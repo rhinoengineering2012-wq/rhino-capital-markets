@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { Crown, Lock } from 'lucide-react';
 import FearGreedMeter from '@/components/analytics/FearGreedMeter';
 import MoversList from '@/components/analytics/MoversList';
 import NewsFeed from '@/components/analytics/NewsFeed';
@@ -108,6 +109,22 @@ export default function AnalyticsTab({ instruments }: AnalyticsTabProps) {
           <NewsFeed items={MARKET_NEWS} />
         </div>
       </div>
+
+      {/* MONEY LOCKED CARDS - FORCES UPGRADE */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <LockedCard
+          title="Market Dominance"
+          description="BTC dominance + sector rotation. Pro traders only."
+          badge="PRO"
+          preview="BTC.D 58.3% • ETH.D 18.2% • Altseason Risk: HIGH"
+        />
+        <LockedCard
+          title="AI Sentiment Analysis"
+          description="Real-time news + social sentiment score for every asset."
+          badge="PRO"
+          preview="Overall Sentiment: Bullish 72% • Fear zone ending • Buy signal"
+        />
+      </div>
     </section>
   );
 }
@@ -123,6 +140,32 @@ function KpiCard({ label, value, tone }: KpiCardProps) {
     <div className="rounded-xl border border-ink-800 bg-ink-900/60 px-4 py-4">
       <p className="text-xs uppercase tracking-wider text-ink-400">{label}</p>
       <p className={`tabular mt-1.5 text-xl font-bold ${tone === 'up' ? 'text-up' : 'text-down'}`}>{value}</p>
+    </div>
+  );
+}
+
+function LockedCard({ title, description, badge, preview }: { title: string; description: string; badge: string; preview: string }) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-brand/20 bg-ink-900/80 p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-ink-100">{title}</h2>
+        <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold uppercase text-black">
+          <Crown className="h-3 w-3" />
+          {badge}
+        </span>
+      </div>
+      <p className="text-xs text-ink-400">{description}</p>
+      
+      <div className="relative mt-4 rounded-xl border border-ink-800 bg-black/50 p-4">
+        <p className="blur-[6px] select-none text-sm text-ink-300">{preview}</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/60 backdrop-blur-[2px]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-800">
+            <Lock className="h-5 w-5 text-brand" />
+          </div>
+          <p className="text-xs font-semibold text-ink-100">Upgrade to unlock</p>
+          <p className="text-[11px] text-ink-400">Weekly / Monthly / Yearly plan</p>
+        </div>
+      </div>
     </div>
   );
 }
