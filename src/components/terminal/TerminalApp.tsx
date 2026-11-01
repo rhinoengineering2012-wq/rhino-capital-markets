@@ -44,8 +44,8 @@ export default function TerminalApp({ onLogout }: TerminalAppProps) {
           >
             {tab === 'markets' && <LiveMarketsTab instruments={instruments} />}
             {tab === 'charts' && <ChartsTab instruments={instruments} />}
-            {tab === 'analytics' && <AnalyticsTab instruments={instruments} />}
-            {tab === 'portfolio' && <PortfolioTab instruments={instruments} />}
+            {tab === 'analytics' && <AnalyticsTab instruments={instruments} onUpgrade={() => setTab('subscription')} />}
+            {tab === 'portfolio' && <PortfolioTab instruments={instruments} onUpgrade={() => setTab('subscription')} />}
             {tab === 'subscription' && <SubscriptionTab trialStartedAt={trialStartedAt} />}
           </motion.div>
         </AnimatePresence>
