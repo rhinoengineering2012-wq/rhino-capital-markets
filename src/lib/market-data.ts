@@ -1,60 +1,104 @@
-// Rhino Capital Markets - Market Data
-export type AssetClass = 'stocks' | 'forex' | 'crypto' | 'commodities' | 'bonds' | 'etfs' | 'africa';
+// Rhino Capital Markets - Market Data - International
+export type AssetClass = 'forex' | 'crypto' | 'stock' | 'commodities' | 'bonds' | 'etfs' | 'africa';
+
+export const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
+  forex: 'Forex',
+  crypto: 'Crypto',
+  stock: 'Stocks',
+  commodities: 'Commodities',
+  bonds: 'Bonds',
+  etfs: 'ETFs',
+  africa: 'Markets',
+};
 
 export interface Instrument {
-  id: string;
   symbol: string;
   name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  volume?: number;
-  marketCap?: number;
-  sparkline: number[];
   assetClass: AssetClass;
-  flag?: string;
+  flag: string;
+  price: number;
+  prevPrice: number;
+  high: number;
+  low: number;
+  volume: number;
+  decimals: number;
+  spark: number[];
   currencyCode?: string;
 }
 
-function genSpark(base: number, vol: number, points = 24): number[] {
+function genSpark(base: number, vol: number, points = 20): number[] {
   const arr: number[] = []; let v = base;
   for (let i = 0; i < points; i++) { v += (Math.random() - 0.5) * vol; arr.push(Number(v.toFixed(2))); }
   return arr;
 }
 
+function make(symbol: string, name: string, assetClass: AssetClass, flag: string, price: number, decimals: number, currencyCode?: string): Instrument {
+  const prevPrice = price - (Math.random() - 0.5) * price * 0.01;
+  const high = Math.max(price, prevPrice) + Math.random() * price * 0.005;
+  const low = Math.min(price, prevPrice) - Math.random() * price * 0.005;
+  const vol = price * 0.005;
+  return {
+    symbol, name, assetClass, flag, price, prevPrice,
+    high: Number(high.toFixed(decimals)),
+    low: Number(low.toFixed(decimals)),
+    volume: Math.floor(Math.random() * 50000000) + 1000000,
+    decimals,
+    spark: genSpark(price, vol),
+    currencyCode,
+  };
+}
+
 export const INSTRUMENTS: Instrument[] = [
-  { id: 'AAPL', symbol: 'AAPL', name: 'Apple Inc.', price: 210.45, change: 2.34, changePercent: 1.12, sparkline: genSpark(210, 2), assetClass: 'stocks', flag: '🇺🇸' },
-  { id: 'MSFT', symbol: 'MSFT', name: 'Microsoft', price: 445.12, change: -1.23, changePercent: -0.27, sparkline: genSpark(445, 3), assetClass: 'stocks', flag: '🇺🇸' },
-  { id: 'NVDA', symbol: 'NVDA', name: 'NVIDIA', price: 135.50, change: 3.20, changePercent: 2.41, sparkline: genSpark(135, 4), assetClass: 'stocks', flag: '🇺🇸' },
-  { id: 'TSLA', symbol: 'TSLA', name: 'Tesla', price: 268.90, change: 5.67, changePercent: 2.15, sparkline: genSpark(268, 5), assetClass: 'stocks', flag: '🇺🇸' },
+  // Global
+  make('EUR/USD', 'Euro / US Dollar', 'forex', '🇪🇺', 1.0854, 4),
+  make('GBP/USD', 'British Pound / US Dollar', 'forex', '🇬🇧', 1.2750, 4),
+  make('USD/JPY', 'US Dollar / Japanese Yen', 'forex', '🇯🇵', 152.34, 2),
+  make('USD/CHF', 'US Dollar / Swiss Franc', 'forex', '🇨🇭', 0.91, 4),
+  make('AUD/USD', 'Australian Dollar / US Dollar', 'forex', '🇦🇺', 0.66, 4),
+  make('USD/CAD', 'US Dollar / Canadian Dollar', 'forex', '🇨🇦', 1.36, 4),
 
-  { id: 'EURUSD', symbol: 'EUR/USD', name: 'Euro / US Dollar', price: 1.0854, change: 0.0021, changePercent: 0.19, sparkline: genSpark(1.08, 0.01), assetClass: 'forex', flag: '🇪🇺' },
-  { id: 'GBPUSD', symbol: 'GBP/USD', name: 'British Pound / US Dollar', price: 1.2750, change: -0.0012, changePercent: -0.09, sparkline: genSpark(1.27, 0.01), assetClass: 'forex', flag: '🇬🇧' },
-  { id: 'USDJPY', symbol: 'USD/JPY', name: 'US Dollar / Japanese Yen', price: 152.34, change: 0.45, changePercent: 0.29, sparkline: genSpark(152, 0.5), assetClass: 'forex', flag: '🇯🇵' },
-  { id: 'USDCHF', symbol: 'USD/CHF', name: 'US Dollar / Swiss Franc', price: 0.91, change: 0.001, changePercent: 0.11, sparkline: genSpark(0.91, 0.005), assetClass: 'forex', flag: '🇨🇭' },
-  { id: 'AUDUSD', symbol: 'AUD/USD', name: 'Australian Dollar / US Dollar', price: 0.66, change: 0.002, changePercent: 0.30, sparkline: genSpark(0.66, 0.005), assetClass: 'forex', flag: '🇦🇺' },
-  { id: 'USDCAD', symbol: 'USD/CAD', name: 'US Dollar / Canadian Dollar', price: 1.36, change: -0.002, changePercent: -0.15, sparkline: genSpark(1.36, 0.01), assetClass: 'forex', flag: '🇨🇦' },
+  // International with flags - includes UGX, KES, NGN etc as forex
+  make('USD/UGX', 'US Dollar / Ugandan Shilling', 'forex', '🇺🇬', 3720.50, 2, 'UGX'),
+  make('USD/KES', 'US Dollar / Kenyan Shilling', 'forex', '🇰🇪', 129.45, 2, 'KES'),
+  make('USD/NGN', 'US Dollar / Nigerian Naira', 'forex', '🇳🇬', 1620.75, 2, 'NGN'),
+  make('USD/ZAR', 'US Dollar / South African Rand', 'forex', '🇿🇦', 18.65, 2, 'ZAR'),
+  make('USD/GHS', 'US Dollar / Ghanaian Cedi', 'forex', '🇬🇭', 15.20, 2, 'GHS'),
+  make('USD/EGP', 'US Dollar / Egyptian Pound', 'forex', '🇪🇬', 50.85, 2, 'EGP'),
+  make('USD/RWF', 'US Dollar / Rwandan Franc', 'forex', '🇷🇼', 1320.10, 2, 'RWF'),
+  make('USD/TZS', 'US Dollar / Tanzanian Shilling', 'forex', '🇹🇿', 2630.00, 2, 'TZS'),
 
-  { id: 'USD_UGX', symbol: 'USD/UGX', name: 'US Dollar / Ugandan Shilling', price: 3720.50, change: 15.2, changePercent: 0.41, sparkline: genSpark(3720, 10), assetClass: 'forex', flag: '🇺🇬', currencyCode: 'UGX' },
-  { id: 'USD_KES', symbol: 'USD/KES', name: 'US Dollar / Kenyan Shilling', price: 129.45, change: -0.35, changePercent: -0.27, sparkline: genSpark(129, 1), assetClass: 'forex', flag: '🇰🇪', currencyCode: 'KES' },
-  { id: 'USD_NGN', symbol: 'USD/NGN', name: 'US Dollar / Nigerian Naira', price: 1620.75, change: 8.5, changePercent: 0.52, sparkline: genSpark(1620, 15), assetClass: 'forex', flag: '🇳🇬', currencyCode: 'NGN' },
-  { id: 'USD_ZAR', symbol: 'USD/ZAR', name: 'US Dollar / South African Rand', price: 18.65, change: -0.12, changePercent: -0.64, sparkline: genSpark(18.6, 0.3), assetClass: 'forex', flag: '🇿🇦', currencyCode: 'ZAR' },
-  { id: 'USD_GHS', symbol: 'USD/GHS', name: 'US Dollar / Ghanaian Cedi', price: 15.20, change: 0.05, changePercent: 0.33, sparkline: genSpark(15.2, 0.2), assetClass: 'forex', flag: '🇬🇭', currencyCode: 'GHS' },
-  { id: 'USD_EGP', symbol: 'USD/EGP', name: 'US Dollar / Egyptian Pound', price: 50.85, change: 0.10, changePercent: 0.19, sparkline: genSpark(50, 0.5), assetClass: 'forex', flag: '🇪🇬', currencyCode: 'EGP' },
-  { id: 'USD_RWF', symbol: 'USD/RWF', name: 'US Dollar / Rwandan Franc', price: 1320.10, change: 2.1, changePercent: 0.16, sparkline: genSpark(1320, 8), assetClass: 'forex', flag: '🇷🇼', currencyCode: 'RWF' },
-  { id: 'USD_TZS', symbol: 'USD/TZS', name: 'US Dollar / Tanzanian Shilling', price: 2630.00, change: -5.0, changePercent: -0.19, sparkline: genSpark(2630, 12), assetClass: 'forex', flag: '🇹🇿', currencyCode: 'TZS' },
+  make('BTC/USD', 'Bitcoin', 'crypto', '₿', 67234.12, 2),
+  make('ETH/USD', 'Ethereum', 'crypto', 'Ξ', 3421.55, 2),
+  make('SOL/USD', 'Solana', 'crypto', '◎', 145.20, 2),
 
-  { id: 'BTC', symbol: 'BTC/USD', name: 'Bitcoin', price: 67234.12, change: 1234.5, changePercent: 1.87, sparkline: genSpark(67234, 500), assetClass: 'crypto', flag: '₿' },
-  { id: 'ETH', symbol: 'ETH/USD', name: 'Ethereum', price: 3421.55, change: -45.2, changePercent: -1.30, sparkline: genSpark(3421, 50), assetClass: 'crypto', flag: 'Ξ' },
-  { id: 'SOL', symbol: 'SOL/USD', name: 'Solana', price: 145.20, change: 5.20, changePercent: 3.71, sparkline: genSpark(145, 5), assetClass: 'crypto', flag: '◎' },
+  make('AAPL', 'Apple Inc.', 'stock', '🇺🇸', 210.45, 2),
+  make('MSFT', 'Microsoft', 'stock', '🇺🇸', 445.12, 2),
+  make('NVDA', 'NVIDIA Corp', 'stock', '🇺🇸', 135.50, 2),
+  make('TSLA', 'Tesla Inc', 'stock', '🇺🇸', 268.90, 2),
 
-  { id: 'XAUUSD', symbol: 'XAU/USD', name: 'Gold / US Dollar', price: 2650.45, change: 12.30, changePercent: 0.46, sparkline: genSpark(2650, 15), assetClass: 'commodities', flag: '🪙' },
-  { id: 'XAGUSD', symbol: 'XAG/USD', name: 'Silver / US Dollar', price: 31.20, change: 0.25, changePercent: 0.80, sparkline: genSpark(31, 0.5), assetClass: 'commodities', flag: '🥈' },
-  { id: 'USOIL', symbol: 'WTI/USD', name: 'US Crude Oil', price: 78.45, change: -1.20, changePercent: -1.50, sparkline: genSpark(78, 1.5), assetClass: 'commodities', flag: '🛢️' },
-
-  { id: 'US10Y', symbol: 'US10Y', name: 'US 10-Year Treasury', price: 4.25, change: 0.02, changePercent: 0.47, sparkline: genSpark(4.25, 0.05), assetClass: 'bonds', flag: '🇺🇸' },
-  { id: 'SPY', symbol: 'SPY', name: 'S&P 500 ETF', price: 475.20, change: 2.10, changePercent: 0.44, sparkline: genSpark(475, 3), assetClass: 'etfs', flag: '🇺🇸' },
+  make('XAU/USD', 'Gold / US Dollar', 'commodities', '🪙', 2650.45, 2),
+  make('WTI/USD', 'US Crude Oil', 'commodities', '🛢️', 78.45, 2),
 ];
+
+export function changePercent(item: Instrument): number {
+  if (!item.prevPrice) return 0;
+  return ((item.price - item.prevPrice) / item.prevPrice) * 100;
+}
+
+export function formatCompact(n: number): string {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
+  return n.toString();
+}
+
+export function formatPercent(n: number): string {
+  return `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
+}
+
+export function formatPrice(value: number, decimals = 2): string {
+  return value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
 
 export function fearGreedLabel(value: number): string {
   if (value < 25) return 'Extreme Fear'; if (value < 45) return 'Fear'; if (value < 55) return 'Neutral'; if (value < 75) return 'Greed'; return 'Extreme Greed';
@@ -62,8 +106,11 @@ export function fearGreedLabel(value: number): string {
 export function fearGreedColor(value: number): string {
   if (value < 25) return '#ef4444'; if (value < 45) return '#f97316'; if (value < 55) return '#eab308'; if (value < 75) return '#22c55e'; return '#16a34a';
 }
+
 export const createInstruments = () => INSTRUMENTS;
-export const tickInstrument = (inst: Instrument): Instrument => ({ ...inst, price: inst.price + (Math.random() - 0.5) * (inst.price * 0.001), sparkline: [...inst.sparkline.slice(1), inst.price] });
-export const formatCompact = (n: number) => n.toLocaleString();
+export const tickInstrument = (inst: Instrument): Instrument => {
+  const newPrice = inst.price + (Math.random() - 0.5) * inst.price * 0.002;
+  return { ...inst, prevPrice: inst.price, price: Number(newPrice.toFixed(inst.decimals)), spark: [...inst.spark.slice(1), newPrice] };
+};
 export const formatCurrency = (n: number) => `$${n.toLocaleString()}`;
-export const formatPercent = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
+export const getInstrumentsByClass = (cls: AssetClass) => INSTRUMENTS.filter(i => i.assetClass === cls);
