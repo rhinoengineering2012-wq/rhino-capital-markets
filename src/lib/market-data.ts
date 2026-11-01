@@ -49,15 +49,12 @@ function make(symbol: string, name: string, assetClass: AssetClass, flag: string
 }
 
 export const INSTRUMENTS: Instrument[] = [
-  // Global
   make('EUR/USD', 'Euro / US Dollar', 'forex', '🇪🇺', 1.0854, 4),
   make('GBP/USD', 'British Pound / US Dollar', 'forex', '🇬🇧', 1.2750, 4),
   make('USD/JPY', 'US Dollar / Japanese Yen', 'forex', '🇯🇵', 152.34, 2),
   make('USD/CHF', 'US Dollar / Swiss Franc', 'forex', '🇨🇭', 0.91, 4),
   make('AUD/USD', 'Australian Dollar / US Dollar', 'forex', '🇦🇺', 0.66, 4),
   make('USD/CAD', 'US Dollar / Canadian Dollar', 'forex', '🇨🇦', 1.36, 4),
-
-  // International with flags - includes UGX, KES, NGN etc as forex
   make('USD/UGX', 'US Dollar / Ugandan Shilling', 'forex', '🇺🇬', 3720.50, 2, 'UGX'),
   make('USD/KES', 'US Dollar / Kenyan Shilling', 'forex', '🇰🇪', 129.45, 2, 'KES'),
   make('USD/NGN', 'US Dollar / Nigerian Naira', 'forex', '🇳🇬', 1620.75, 2, 'NGN'),
@@ -66,16 +63,13 @@ export const INSTRUMENTS: Instrument[] = [
   make('USD/EGP', 'US Dollar / Egyptian Pound', 'forex', '🇪🇬', 50.85, 2, 'EGP'),
   make('USD/RWF', 'US Dollar / Rwandan Franc', 'forex', '🇷🇼', 1320.10, 2, 'RWF'),
   make('USD/TZS', 'US Dollar / Tanzanian Shilling', 'forex', '🇹🇿', 2630.00, 2, 'TZS'),
-
   make('BTC/USD', 'Bitcoin', 'crypto', '₿', 67234.12, 2),
   make('ETH/USD', 'Ethereum', 'crypto', 'Ξ', 3421.55, 2),
   make('SOL/USD', 'Solana', 'crypto', '◎', 145.20, 2),
-
   make('AAPL', 'Apple Inc.', 'stock', '🇺🇸', 210.45, 2),
   make('MSFT', 'Microsoft', 'stock', '🇺🇸', 445.12, 2),
   make('NVDA', 'NVIDIA Corp', 'stock', '🇺🇸', 135.50, 2),
   make('TSLA', 'Tesla Inc', 'stock', '🇺🇸', 268.90, 2),
-
   make('XAU/USD', 'Gold / US Dollar', 'commodities', '🪙', 2650.45, 2),
   make('WTI/USD', 'US Crude Oil', 'commodities', '🛢️', 78.45, 2),
 ];
@@ -106,6 +100,13 @@ export function fearGreedLabel(value: number): string {
 export function fearGreedColor(value: number): string {
   if (value < 25) return '#ef4444'; if (value < 45) return '#f97316'; if (value < 55) return '#eab308'; if (value < 75) return '#22c55e'; return '#16a34a';
 }
+
+// FIX FOR AnalyticsTab.tsx - this was missing!
+export function computeFearGreed(value?: number): number {
+  if (typeof value === 'number') return value;
+  return Math.floor(Math.random() * 60) + 20;
+}
+export const computeFearAndGreed = computeFearGreed;
 
 export const createInstruments = () => INSTRUMENTS;
 export const tickInstrument = (inst: Instrument): Instrument => {
