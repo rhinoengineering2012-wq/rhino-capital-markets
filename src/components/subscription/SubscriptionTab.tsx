@@ -7,13 +7,18 @@ import { PLANS, formatUgx, type Plan } from '@/lib/plans';
 const TRIAL_DAYS = 3;
 const DAY_MS = 86_400_000;
 
-function trialDaysLeft(trialStartedAt: string): number {
-  const end = new Date(trialStartedAt).getTime() + TRIAL_DAYS * DAY_MS;
+function trialDaysLeft(trialStartedAt: string | number): number {
+  const startMs = typeof trialStartedAt === 'number' 
+    ? trialStartedAt 
+    : new Date(trialStartedAt).getTime();
+  // If invalid date, assume trial just started now
+  const validStart = isNaN(startMs) ? Date.now() : startMs;
+  const end = validStart + TRIAL_DAYS * DAY_MS;
   return Math.max(0, Math.ceil((end - Date.now()) / DAY_MS));
 }
 
 interface SubscriptionTabProps {
-  trialStartedAt: string;
+  trialStartedAt: string | number;
 }
 
 export default function SubscriptionTab({ trialStartedAt }: SubscriptionTabProps) {
@@ -192,4 +197,4 @@ function PlanCheckout({ plan, onClose }: PlanCheckoutProps) {
       </motion.div>
     </motion.div>
   );
-}
+                           }
