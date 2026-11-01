@@ -78,22 +78,18 @@ export function changePercent(item: Instrument): number {
   if (!item.prevPrice) return 0;
   return ((item.price - item.prevPrice) / item.prevPrice) * 100;
 }
-
 export function formatCompact(n: number): string {
   if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
   return n.toString();
 }
-
 export function formatPercent(n: number): string {
   return `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
 }
-
 export function formatPrice(value: number, decimals = 2): string {
   return value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
-
 export function fearGreedLabel(value: number): string {
   if (value < 25) return 'Extreme Fear'; if (value < 45) return 'Fear'; if (value < 55) return 'Neutral'; if (value < 75) return 'Greed'; return 'Extreme Greed';
 }
@@ -101,12 +97,16 @@ export function fearGreedColor(value: number): string {
   if (value < 25) return '#ef4444'; if (value < 45) return '#f97316'; if (value < 55) return '#eab308'; if (value < 75) return '#22c55e'; return '#16a34a';
 }
 
-// FIX FOR AnalyticsTab.tsx - this was missing!
+// FIXES FOR YOUR ORIGINAL TABS
 export function computeFearGreed(value?: number): number {
   if (typeof value === 'number') return value;
   return Math.floor(Math.random() * 60) + 20;
 }
 export const computeFearAndGreed = computeFearGreed;
+
+export type Timeframe = '1M' | '5M' | '15M' | '1H' | '4H' | '1D' | '1W' | '1M';
+export const TIMEFRAMES: Timeframe[] = ['1M', '5M', '15M', '1H', '4H', '1D', '1W', '1M'];
+export const Timeframes = TIMEFRAMES;
 
 export const createInstruments = () => INSTRUMENTS;
 export const tickInstrument = (inst: Instrument): Instrument => {
