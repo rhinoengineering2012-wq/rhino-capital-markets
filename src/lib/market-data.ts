@@ -1,43 +1,46 @@
-export type Instrument = {
+export interface Instrument {
   symbol: string;
   name: string;
   price: number;
   change: number;
   changePercent: number;
-  category: 'crypto' | 'forex' | 'forex-africa' | 'commodity' | 'stock' | 'index';
-  flag?: string;
-};
+  flag: string; // 🇺🇬 or $ etc
+  type: 'forex' | 'crypto' | 'stock';
+}
 
-const BASE: Omit<Instrument, 'price' | 'change' | 'changePercent'>[] = [
-  { symbol: 'USD/UGX', name: 'US Dollar / Uganda Shilling', category: 'forex-africa', flag: '🇺🇬' },
-  { symbol: 'USD/KES', name: 'US Dollar / Kenya Shilling', category: 'forex-africa', flag: '🇰🇪' },
-  { symbol: 'USD/NGN', name: 'US Dollar / Nigeria Naira', category: 'forex-africa', flag: '🇳🇬' },
-  { symbol: 'USD/ZAR', name: 'US Dollar / South Africa Rand', category: 'forex-africa', flag: '🇿🇦' },
-  { symbol: 'EUR/USD', name: 'Euro / US Dollar', category: 'forex', flag: '🇪🇺' },
-  { symbol: 'GBP/USD', name: 'British Pound / US Dollar', category: 'forex', flag: '🇬🇧' },
-  { symbol: 'USD/JPY', name: 'US Dollar / Japanese Yen', category: 'forex', flag: '🇯🇵' },
-  { symbol: 'XAU/USD', name: 'Gold', category: 'commodity', flag: '🥇' },
-  { symbol: 'WTI', name: 'Crude Oil', category: 'commodity', flag: '🛢️' },
-  { symbol: 'BTC', name: 'Bitcoin', category: 'crypto', flag: '₿' },
-  { symbol: 'ETH', name: 'Ethereum', category: 'crypto', flag: 'Ξ' },
-  { symbol: 'SOL', name: 'Solana', category: 'crypto', flag: '◎' },
-  { symbol: 'AAPL', name: 'Apple', category: 'stock', flag: '🍎' },
-  { symbol: 'NVDA', name: 'NVIDIA', category: 'stock', flag: '💚' },
+export const createInstruments = (): Instrument[] => [
+  // AFRICA - WITH REAL FLAGS
+  { symbol: 'USD/UGX', name: 'US Dollar / Ugandan Shilling', price: 3850, change: 0, changePercent: 0, flag: '🇺🇬', type: 'forex' },
+  { symbol: 'USD/KES', name: 'US Dollar / Kenyan Shilling', price: 129.5, change: 0, changePercent: 0, flag: '🇰🇪', type: 'forex' },
+  { symbol: 'USD/NGN', name: 'US Dollar / Nigerian Naira', price: 1650, change: 0, changePercent: 0, flag: '🇳🇬', type: 'forex' },
+  { symbol: 'USD/ZAR', name: 'US Dollar / South African Rand', price: 18.43, change: 0, changePercent: 0, flag: '🇿🇦', type: 'forex' },
+
+  // WORLD FOREX - WITH FLAGS
+  { symbol: 'EUR/USD', name: 'Euro / US Dollar', price: 1.0849, change: 0, changePercent: 0, flag: '🇪🇺', type: 'forex' },
+  { symbol: 'GBP/USD', name: 'British Pound / US Dollar', price: 1.2724, change: 0, changePercent: 0, flag: '🇬🇧', type: 'forex' },
+  { symbol: 'USD/JPY', name: 'US Dollar / Japanese Yen', price: 151.67, change: 0, changePercent: 0, flag: '🇯🇵', type: 'forex' },
+  { symbol: 'AUD/USD', name: 'Australian Dollar / US Dollar', price: 0.6579, change: 0, changePercent: 0, flag: '🇦🇺', type: 'forex' },
+  { symbol: 'USD/CHF', name: 'US Dollar / Swiss Franc', price: 0.9025, change: 0, changePercent: 0, flag: '🇨🇭', type: 'forex' },
+
+  // CRYPTO - HOW THEY APPEAR ON SCREENS
+  { symbol: 'BTC', name: 'Bitcoin', price: 78000, change: 0, changePercent: 0, flag: '₿', type: 'crypto' },
+  { symbol: 'ETH', name: 'Ethereum', price: 3523, change: 0, changePercent: 0, flag: 'Ξ', type: 'crypto' },
+  { symbol: 'SOL', name: 'Solana', price: 149.24, change: 0, changePercent: 0, flag: '◎', type: 'crypto' },
+  { symbol: 'BNB', name: 'BNB', price: 586, change: 0, changePercent: 0, flag: 'B', type: 'crypto' },
+
+  // STOCKS - TESLA GOOGLE ETC LIKE ON SCREENS
+  { symbol: 'AAPL', name: 'Apple Inc.', price: 226.70, change: 0, changePercent: 0, flag: 'AAPL', type: 'stock' },
+  { symbol: 'TSLA', name: 'Tesla Inc.', price: 241.86, change: 0, changePercent: 0, flag: 'TSLA', type: 'stock' },
+  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 131.47, change: 0, changePercent: 0, flag: 'NVDA', type: 'stock' },
+  { symbol: 'MSFT', name: 'Microsoft', price: 418.15, change: 0, changePercent: 0, flag: 'MSFT', type: 'stock' },
+  { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 186.12, change: 0, changePercent: 0, flag: 'AMZN', type: 'stock' },
+  { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 168.23, change: 0, changePercent: 0, flag: 'GOOGL', type: 'stock' },
 ];
 
-const PRICES: Record<string, number> = {
-  'USD/UGX': 3850, 'USD/KES': 129, 'USD/NGN': 1650, 'USD/ZAR': 18.5,
-  'EUR/USD': 1.085, 'GBP/USD': 1.27, 'USD/JPY': 154.2,
-  'XAU/USD': 2350, 'WTI': 78.5, 'BTC': 67000, 'ETH': 3500, 'SOL': 150,
-  'AAPL': 210, 'NVDA': 950,
+export const tickInstrument = (inst: Instrument): Instrument => {
+  const volatility = inst.type === 'forex' ? 0.002 : 0.005;
+  const changeFactor = (Math.random() - 0.5) * volatility;
+  const newPrice = inst.price * (1 + changeFactor);
+  const diff = newPrice - inst.price;
+  return { ...inst, price: newPrice, change: diff, changePercent: (diff / inst.price) * 100 };
 };
-
-export function createInstruments(): Instrument[] {
-  return BASE.map(b => ({ ...b, price: PRICES[b.symbol] || 100, change: 0, changePercent: 0 }));
-}
-
-export function tickInstrument(inst: Instrument): Instrument {
-  const v = inst.category === 'crypto' ? 0.008 : 0.003;
-  const c = (Math.random() - 0.5) * v * inst.price;
-  return { ...inst, price: Number((inst.price + c).toFixed(inst.price > 100 ? 2 : 4)), change: Number(c.toFixed(2)), changePercent: Number(((c / inst.price) * 100).toFixed(2)) };
-}
