@@ -25,6 +25,18 @@ interface LiveMarketsTabProps {
   instruments: Instrument[];
 }
 
+const getFlagStyle = (flag: string) => {
+  if (flag.includes('🇺🇬')) return 'bg-yellow-400';
+  if (flag.includes('🇰🇪')) return 'bg-red-500';
+  if (flag.includes('🇳🇬')) return 'bg-green-600';
+  if (flag.includes('🇿🇦')) return 'bg-green-700';
+  if (flag.includes('🇪🇬')) return 'bg-red-600';
+  if (flag.includes('🇬🇭')) return 'bg-yellow-500';
+  if (flag === '₿') return 'bg-orange-500';
+  if (flag === 'Ξ') return 'bg-indigo-500';
+  return 'bg-ink-700';
+};
+
 export default function LiveMarketsTab({ instruments }: LiveMarketsTabProps) {
   const [filter, setFilter] = useState<Filter>('all');
 
@@ -98,11 +110,16 @@ export default function LiveMarketsTab({ instruments }: LiveMarketsTabProps) {
                 transition={{ delay: index * 0.03, duration: 0.3 }}
                 className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-3.5 transition-colors hover:bg-ink-800/60 md:grid-cols-[2.2fr_1.3fr_1fr_1.1fr_1.1fr_1.2fr_1.6fr] md:gap-4 md:px-5"
               >
-                <div className="min-w-0">
-                  <p className="font-semibold text-ink-100">{item.symbol}</p>
-                  <p className="truncate text-xs text-ink-400">
-                    {item.name} &middot; {ASSET_CLASS_LABELS[item.assetClass]}
-                  </p>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[16px] shrink-0 ${getFlagStyle(item.flag)}`}>
+                    {item.flag}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-ink-100">{item.symbol}</p>
+                    <p className="truncate text-xs text-ink-400">
+                      {item.name} &middot; {ASSET_CLASS_LABELS[item.assetClass]}
+                    </p>
+                  </div>
                 </div>
                 <div className="text-right md:hidden">
                   <LivePrice value={item.price} decimals={item.decimals} up={up} className="text-sm" />
